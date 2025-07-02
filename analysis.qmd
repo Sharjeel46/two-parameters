@@ -2,5 +2,27 @@
 title: "Two-parameters"
 Author: Sharjeel
 format: html
+execute: 
+  echo: false
 ---
 
+
+
+```{r}
+library(tidyverse)
+library(primer.data)
+#| message: false
+```
+
+```{r}
+set.seed(10)
+
+x <- nhanes |>
+  filter(age >= 18 & age <= 27) |>
+  select(height, sex) |>
+  drop_na() |>
+  slice_sample(n = 50)
+```
+
+
+People have different heights. Using CDC data from 2009–2011, we aim to estimate the average height of USMC recruits for the next year.
