@@ -11,6 +11,8 @@ execute:
 ```{r}
 library(tidyverse)
 library(primer.data)
+library(tidymodels)
+library(broom)
 #| message: false
 ```
 
@@ -24,5 +26,11 @@ x <- nhanes |>
   slice_sample(n = 50)
 ```
 
+```{r}
+\[
+Y_i = \beta_0 + \beta_1 \cdot \text{Male}_i + \varepsilon_i
+\]
 
-People have different heights. Using CDC data from 2009–2011, we aim to estimate the average height of USMC recruits for the next year.
+```
+
+People have different heights. Using CDC data from 2009–2011, we aim to estimate the average height of USMC recruits for the next year.Since the survey is voluntary, taller individuals may be more likely to respond, which could affect how representative the data is.
