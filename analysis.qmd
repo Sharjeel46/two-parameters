@@ -1,0 +1,103 @@
+---
+title: "Two-parameters"
+Author: Sharjeel
+format: html
+execute: 
+  echo: false
+---
+
+
+
+```{r}
+library(tidyverse)
+library(primer.data)
+library(tidymodels)
+library(broom)
+library(marginaleffects)
+#| message: false
+```
+
+```{r}
+set.seed(10)
+
+x <- nhanes |>
+  filter(age >= 18 & age <= 27) |>
+  select(height, sex) |>
+  drop_na() |>
+  slice_sample(n = 50)
+```
+
+```{r}
+linear_reg() |> fit(height ~ sex, data = x)
+print(fir_height)
+$$
+Y_i = \beta_0 + \beta_1 \cdot \text{Male}_i + \varepsilon_i
+$$
+    \[
+\hat{Y}_i = 64.50 + 5.20 \cdot \text{Male}_i
+\]
+
+
+
+
+
+
+```
+
+```{r}
+#| cache: true
+# Estimate the model and assign to fit_height
+fit_height <- linear_reg() |>
+  fit(height ~ sex, data = x)
+tidy(fit_height, conf.int = TRUE)
+
+```
+
+
+```{r}
+#| echo: true
+
+library(broom)
+library(gt)
+
+tidy(fit_height, conf.int = TRUE) |>
+  select(term, estimate, conf.low, conf.high) |>
+  gt() |>
+  fmt_number(columns = 2:4, decimals = 2) |>
+  cols_label(
+    term = "Term",
+    estimate = "Estimate",
+    conf.low = "Lower 95% CI",
+    conf.high = "Upper 95% CI"
+  ) |>
+  tab_header(title = "Estimated Coefficients with 95% Confidence Intervals")
+```
+
+```{r}
+#| fig-cap: "Predicted Adult Heights by Sex"
+#| message: false
+#| warning: false
+
+library(ggplot2)
+library(marginaleffects)
+
+# Generate predicted values for plotting
+plot_data <- plot_predictions(fit_height, condition = "sex", draw = FALSE)
+
+# Make a beautiful plot
+ggplot(plot_data, aes(x = sex, y = estimate)) +
+  geom_col(fill = "#3182bd", width = 0.6) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.2) +
+  labs(
+    title = "Estimated Average Adult Height by Sex",
+    subtitle = "Males are estimated to be significantly taller than females on average",
+    caption = "Source: National Health and Nutrition Examination Survey (2009–2011)",
+    x = "Sex",
+    y = "Predicted Height (cm)"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+```
+
+People have different heights. Using CDC data from 2009–2011, we aim to estimate the average height of USMC recruits for the next year.Since the survey is voluntary, taller individuals may be more likely to respond, which could affect how representative the data is.To address this potential bias, we use statistical modeling to adjust for demographic variables that may influence both survey participation and height.We then use this model to generate informed predictions about the average height of future USMC recruits.
